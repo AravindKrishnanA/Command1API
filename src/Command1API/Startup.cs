@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using AutoMapper;
 
 namespace Command1API
 {
@@ -25,8 +27,13 @@ namespace Command1API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CommandContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")));
+            //REFER TO CHAPTER 8 FOR ORIGINAL CODE
+            var builder = new NpgsqlConnectionStringBuilder();
+            builder.ConnectionString = Configuration.GetConnectionString("PostgreSplConnection");
+
+            services.AddDbContext<CommandContext>(opt => opt.UseNpgsql("Username=" + Configuration["UserId"] + "; Password=" + Configuration["Password"] + "; " + Configuration.GetConnectionString("PostgreSqlConnection")));
             services.AddControllers();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<ICommandAPIRepo, SqlCommandAPIRepo>();
         }
 
